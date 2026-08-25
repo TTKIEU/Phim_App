@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+    <!-- drawable/rectangle_8.xml -->
+<vector
+    android:id="@+id/rectangle_8"
+    android:layout_width="1351.1dp"
+    android:layout_height="322.8dp"
+    android:layout_alignParentLeft="true"
+    android:layout_marginLeft="284dp"
+    android:layout_alignParentTop="true"
+    android:layout_marginTop="987dp"
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="1351.1dp"
+    android:height="322.8dp"
+    android:viewportWidth="1351.1"
+    android:viewportHeight="322.8"
+    >
+<group>
+    <clip-path
+        android:pathData="M48 0H1303.1C1329.61 0 1351.1 21.4903 1351.1 48V274.804C1351.1 301.313 1329.61 322.804 1303.1 322.804H48C21.4903 322.804 0 301.313 0 274.804V48C0 21.4903 21.4903 0 48 0Z"
+        />
+    <path
+        android:pathData="M0 0V322.804H1351.1V0"
+        android:fillColor="#7AACC5EE"
+        />
+</group>
+</vector>
