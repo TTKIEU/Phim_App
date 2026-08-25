@@ -25,7 +25,7 @@ class WelcomeFragment : Fragment(R.layout.fragment_welcome) {
         //Navigation Down
         navArrowDown.setOnClickListener {
                 findNavController().navigate(
-                R.id.action_welcomeFragment_to_HomeFragment)
+                R.id.action_welcomeFragment_to_homeFragment)
         }
     }
 }
