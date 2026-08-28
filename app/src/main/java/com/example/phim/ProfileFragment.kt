@@ -1,6 +1,5 @@
 package com.example.phim
 
-import android.media.Image
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
@@ -9,7 +8,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class HomeFragment : Fragment(R.layout.fragment_home) {
+class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     override fun onViewCreated(
         view: View,
@@ -18,12 +17,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
 
         val recyclerView =
-            view.findViewById<RecyclerView>(
-                R.id.movieRecyclerView
-            )
-        val profileButton = view.findViewById<ImageButton>(R.id.navProfileButton)
+            view.findViewById<RecyclerView>(R.id.profileRecyclerView)
 
-        val posts = listOf(
+        val addButton =
+            view.findViewById<ImageButton>(R.id.addRankingButton)
+
+        val rankings = listOf(
+            MoviePost(
+                username = "Taylin",
+                movieName = "Spider-Man: No Way Home",
+                rating = 9.8
+            ),
 
             MoviePost(
                 username = "Taylin",
@@ -32,39 +36,31 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             ),
 
             MoviePost(
-                username = "Alex",
+                username = "Taylin",
                 movieName = "The Batman",
                 rating = 8.7
             ),
 
             MoviePost(
-                username = "Sam",
+                username = "Taylin",
                 movieName = "Dune: Part Two",
-                rating = 9.2
-            ),
-
-            MoviePost(
-                username = "Jordan",
-                movieName = "Everything Everywhere All at Once",
-                rating = 9.6
-            ),
-            MoviePost(
-                username= "Nicole",
-                movieName="Umamusume",
-                rating= 10.0
+                rating = 8.2
             )
-
-
         )
+
+        // Highest rated → lowest rated
+        val sortedRankings =
+            rankings.sortedByDescending { it.rating }
 
         recyclerView.layoutManager =
             LinearLayoutManager(requireContext())
 
         recyclerView.adapter =
-            MovieAdapter(posts)
-        profileButton.setOnClickListener {
+            MovieAdapter(sortedRankings)
+
+        addButton.setOnClickListener {
             findNavController().navigate(
-                R.id.action_homeFragment_to_profileFragment
+                R.id.action_profileFragment_to_rankingFragment
             )
         }
     }
