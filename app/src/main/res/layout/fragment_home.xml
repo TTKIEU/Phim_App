@@ -32,4 +32,15 @@
         android:layout_marginTop="80dp"
         android:layout_marginBottom="40dp" />
 
+    <ImageButton
+        android:id="@+id/navProfileButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+
+        android:background="@drawable/rating_circle"
+        android:contentDescription="Navigate To Profile"
+        android:src="@drawable/ic_add"
+        tools:layout_editor_absoluteX="175dp"
+        tools:layout_editor_absoluteY="20dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
