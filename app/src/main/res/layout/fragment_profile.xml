@@ -11,38 +11,7 @@
 
     <!-- Profile title -->
 
-    <TextView
-        android:id="@+id/profileTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:text="My Rankings"
-        android:textColor="#FFFFFF"
-        android:textSize="28sp"
-        android:textStyle="bold"
-
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="40dp" />
-
     <!-- Add ranking button -->
-
-    <ImageButton
-        android:id="@+id/addRankingButton"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-
-        android:src="@drawable/ic_add"
-        android:background="@drawable/add_button"
-        android:contentDescription="Add movie ranking"
-
-        app:layout_constraintTop_toTopOf="@id/profileTitle"
-        app:layout_constraintBottom_toBottomOf="@id/profileTitle"
-        app:layout_constraintEnd_toEndOf="parent"
-
-        android:layout_marginEnd="35dp" />
 
     <!-- Ranked movies -->
 
@@ -52,18 +21,49 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
 
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp"
+        android:layout_margin="@dimen/profile_margin"
 
         android:clipToPadding="false"
 
-        app:layout_constraintTop_toBottomOf="@id/profileTitle"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toBottomOf="@id/profileTitle"
+        app:layout_constraintVertical_bias="1.0"
+        tools:listitem="@layout/item_movie" />
+
+    <TextView
+        android:id="@+id/profileTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="80dp"
+        android:text="My Rankings"
+        android:textColor="#FFFFFF"
+
+        android:textSize="28sp"
+        android:textStyle="bold"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/addRankingButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+
+        android:layout_marginEnd="32dp"
+        android:background="@drawable/add_button"
+        android:contentDescription="Add movie ranking"
+
+        android:src="@drawable/ic_add"
+        app:layout_constraintBottom_toBottomOf="@id/profileTitle"
         app:layout_constraintEnd_toEndOf="parent"
 
-        tools:listitem="@layout/item_movie" />
+        app:layout_constraintTop_toTopOf="@id/profileTitle"
+        app:layout_constraintVertical_bias="0.409" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
