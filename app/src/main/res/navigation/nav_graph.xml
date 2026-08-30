@@ -56,6 +56,10 @@
         <action
             android:id="@+id/action_rankingFragment_to_comparisonFragment"
             app:destination="@id/comparisonFragment" />
+        <action
+            android:id="@+id/action_rankingFragment_to_profileFragment"
+            app:destination="@id/rankingFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/comparisonFragment"
