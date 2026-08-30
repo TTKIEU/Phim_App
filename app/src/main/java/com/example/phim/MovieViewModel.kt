@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlin.math.pow
+import kotlin.math.round
 
 class MovieViewModel : ViewModel() {
 
@@ -140,16 +141,30 @@ class MovieViewModel : ViewModel() {
         winner: MoviePost,
         loser: MoviePost
     ) {
-        val adjustment = 0.2
+        val kFactor = 0.5
+
+        val expectedWinner =
+            expectedScore(
+                winner.rating,
+                loser.rating
+            )
+        val expectedLoser =
+            expectedScore(
+                loser.rating,
+                winner.rating
+            )
 
         val newWinnerRating =
-            (winner.rating + adjustment)
-                .coerceIn(0.0, 10.0)
+            roundRating(
+                winner.rating +
+                        kFactor * (1.0 - expectedWinner)
+            )
 
         val newLoserRating =
-            (loser.rating - adjustment)
-                .coerceIn(0.0, 10.0)
-
+            roundRating(
+                loser.rating +
+                        kFactor * (0.0 - expectedLoser)
+            )
         _rankings.value =
             _rankings.value
                 .map { movie ->
@@ -184,7 +199,7 @@ class MovieViewModel : ViewModel() {
                 (
                         1.0 +
                                 10.0.pow(
-                                    (ratingB - ratingA) / 400.0
+                                    (ratingB - ratingA) / 2.0
                                 )
                         )
     }
@@ -196,5 +211,10 @@ class MovieViewModel : ViewModel() {
         _comparisonMovie.value = null
 
         alreadyComparedIds.clear()
+    }
+    private fun roundRating(rating: Double): Double {
+        return round(
+            rating.coerceIn(0.0, 10.0) * 10
+        ) / 10
     }
 }
