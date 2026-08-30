@@ -10,23 +10,42 @@
     android:background="@drawable/background">
 
     <!-- Main ranking card -->
+    <ImageButton
+        android:id="@+id/backToProfile"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+
+        android:src="@drawable/ic_back"
+        android:background="@android:color/transparent"
+        android:contentDescription="Back"
+
+        android:elevation="10dp"
+
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="55dp"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
     <LinearLayout
         android:id="@+id/rankingCard"
         android:layout_width="460dp"
         android:layout_height="wrap_content"
 
-        android:orientation="vertical"
+        android:background="@drawable/ranking_container"
         android:gravity="center_horizontal"
+
+        android:orientation="vertical"
 
         android:padding="30dp"
 
-        android:background="@drawable/ranking_container"
-
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.51"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
+
 
         <!-- Genre selector -->
 
@@ -34,24 +53,26 @@
             android:layout_width="230dp"
             android:layout_height="50dp"
 
+            android:background="@drawable/ranking_selector"
             android:gravity="center"
-            android:orientation="horizontal"
 
-            android:background="@drawable/ranking_selector">
+            android:orientation="horizontal">
+
 
             <ImageButton
                 android:id="@+id/genreIcon"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
 
-                android:src="@drawable/background"
                 android:background="@android:color/transparent"
-                android:contentDescription="Genre" />
+                android:contentDescription="Genre"
+                android:src="@drawable/background" />
 
             <Spinner
                 android:id="@+id/genreSpinner"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
+
 
                 android:entries="@array/movie_genres" />
 
@@ -67,10 +88,10 @@
 
             android:layout_marginTop="30dp"
 
-            android:scaleType="centerCrop"
+            android:contentDescription="Movie poster"
 
-            android:src="@drawable/background"
-            android:contentDescription="Movie poster" />
+            android:scaleType="centerCrop"
+            android:src="@drawable/background" />
 
 
         <!-- Movie name -->
@@ -82,18 +103,19 @@
 
             android:layout_marginTop="20dp"
 
-            android:hint="Movie name"
+            android:background="@drawable/ranking_selector"
             android:gravity="center"
 
+            android:hint="Movie name"
             android:textColor="#FFFFFF"
-            android:textColorHint="#CCCCCC"
 
-            android:background="@drawable/ranking_selector" />
+            android:textColorHint="#CCCCCC" />
 
 
         <!-- Rating buttons -->
 
         <LinearLayout
+            style="?android:attr/buttonBarStyle"
             android:layout_width="match_parent"
             android:layout_height="100dp"
 
@@ -102,38 +124,37 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/greatButton"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
-
                 android:text="Great"
+                android:textAllCaps="false"
                 android:textColor="#FFFFFF"
+                app:backgroundTint="#CC72D58A"
+                app:cornerRadius="45dp" />
 
-                android:background="@drawable/great_button" />
-
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/okButton"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
-
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-
                 android:text="Ok"
+                android:textAllCaps="false"
                 android:textColor="#FFFFFF"
+                app:backgroundTint="#D9CF65"
+                app:cornerRadius="45dp" />
 
-                android:background="@drawable/ok_button" />
-
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/badButton"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
-
                 android:text="Bad"
+                android:textAllCaps="false"
                 android:textColor="#FFFFFF"
-
-                android:background="@drawable/bad_button" />
+                app:backgroundTint="#C36D6D"
+                app:cornerRadius="45dp" />
 
         </LinearLayout>
 
@@ -147,13 +168,13 @@
 
             android:layout_marginTop="15dp"
 
-            android:hint="Notes"
+            android:background="@drawable/ranking_selector"
             android:gravity="center"
 
+            android:hint="@string/notes"
             android:textColor="#FFFFFF"
-            android:textColorHint="#B9A9E0"
 
-            android:background="@drawable/ranking_selector" />
+            android:textColorHint="#B9A9E0" />
 
 
         <!-- Submit -->
@@ -165,11 +186,11 @@
 
             android:layout_marginTop="25dp"
 
-            android:text="Submit"
-            android:textSize="18sp"
+            android:background="@drawable/ranking_selector"
+            android:text="@string/submit"
             android:textColor="#B9A9E0"
 
-            android:background="@drawable/ranking_selector" />
+            android:textSize="18sp" />
 
     </LinearLayout>
 

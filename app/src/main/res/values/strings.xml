@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Phim</string>
+    <string name="great">Great</string>
+    <string name="ok">Ok</string>
+    <string name="bad">Bad</string>
+    <string name="notes">Notes</string>
+    <string name="submit">Submit</string>
 </resources>
