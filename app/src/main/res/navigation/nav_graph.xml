@@ -14,8 +14,8 @@
         android:label="Welcome">
 
         <action
-            android:id="@+id/action_welcomeFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
+            android:id="@+id/action_welcomeFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
 
     </fragment>
 
@@ -52,6 +52,21 @@
     <fragment
         android:id="@+id/rankingFragment"
         android:name="com.example.phim.RankingFragment"
-        android:label="Ranking" />
+        android:label="Ranking" >
+        <action
+            android:id="@+id/action_rankingFragment_to_comparisonFragment"
+            app:destination="@id/comparisonFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/comparisonFragment"
+        android:name="com.example.phim.ComparisonFragment"
+        android:label="Compare">
+
+        <action
+            android:id="@+id/action_comparisonFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+
+    </fragment>
+
 
 </navigation>

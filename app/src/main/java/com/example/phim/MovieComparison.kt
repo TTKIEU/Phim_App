@@ -1,4 +1,7 @@
 package com.example.phim
 
-class MovieComparison {
-}
+data class MovieComparison (
+    val movieAId: String,
+    val movieBId: String,
+    val winnerId: String
+    )
