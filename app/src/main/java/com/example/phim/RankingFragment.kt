@@ -9,18 +9,26 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 
-class RankingFragment : Fragment(R.layout.fragment_ranking) {
+class RankingFragment :
+    Fragment(R.layout.fragment_ranking) {
 
-    private val viewModel: MovieViewModel by activityViewModels()
+    private val viewModel:
+            MovieViewModel by activityViewModels()
 
-    private var selectedRating = 0.0
-    private var selectedReviewLevel = ""
+    private var selectedReviewLevel:
+            ReviewLevel? = null
+
 
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?
     ) {
-        super.onViewCreated(view, savedInstanceState)
+
+        super.onViewCreated(
+            view,
+            savedInstanceState
+        )
+
 
         val movieNameInput =
             view.findViewById<EditText>(
@@ -58,34 +66,26 @@ class RankingFragment : Fragment(R.layout.fragment_ranking) {
             )
 
 
-        // GREAT
-
         greatButton.setOnClickListener {
 
-            selectedRating = 10.0
-            selectedReviewLevel = "Great"
+            selectedReviewLevel =
+                ReviewLevel.GREAT
         }
 
-
-        // OK
 
         okButton.setOnClickListener {
 
-            selectedRating = 7.0
-            selectedReviewLevel = "Ok"
+            selectedReviewLevel =
+                ReviewLevel.OK
         }
 
-
-        // BAD
 
         badButton.setOnClickListener {
 
-            selectedRating = 3.0
-            selectedReviewLevel = "Bad"
+            selectedReviewLevel =
+                ReviewLevel.BAD
         }
 
-
-        // SUBMIT
 
         submitButton.setOnClickListener {
 
@@ -105,30 +105,53 @@ class RankingFragment : Fragment(R.layout.fragment_ranking) {
                     .toString()
 
 
+            val reviewLevel =
+                selectedReviewLevel
+
+
             if (
                 movieName.isNotBlank() &&
-                selectedReviewLevel.isNotBlank() &&
-                genre != "Genre"
+                genre != "Genre" &&
+                reviewLevel != null
             ) {
 
-                val moviePost = MoviePost(
-
+                viewModel.addRanking(
                     username = "Taylin",
-
                     movieName = movieName,
-
-                    rating = selectedRating,
-
                     genre = genre,
-
-                    reviewLevel = selectedReviewLevel,
-
+                    reviewLevel = reviewLevel,
                     notes = notes
                 )
 
-                viewModel.addRanking(moviePost)
 
-                findNavController().popBackStack()
+                /*
+                 * If there is another movie
+                 * available for comparison,
+                 * go to ComparisonFragment.
+                 */
+
+                if (
+                    viewModel.comparisonMovie.value
+                    != null
+                ) {
+
+                    findNavController()
+                        .navigate(
+                            R.id.action_rankingFragment_to_comparisonFragment
+                        )
+
+                } else {
+
+                    /*
+                     * First movie ever ranked.
+                     * Nothing to compare against.
+                     */
+
+                    viewModel.finishComparisons()
+
+                    findNavController()
+                        .popBackStack()
+                }
             }
         }
     }
