@@ -2,19 +2,22 @@ package com.example.phim
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
-import android.widget.Button
 import android.widget.EditText
-import android.widget.Spinner
+import android.widget.ImageButton
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import android.widget.ImageButton
+import com.bumptech.glide.Glide
+import com.google.android.material.button.MaterialButton
+import android.widget.ImageView
 
 class RankingFragment :
-
-    Fragment(R.layout.fragment_ranking) {
-
+    Fragment(
+        R.layout.fragment_ranking
+    ) {
 
     private val viewModel:
             MovieViewModel by activityViewModels()
@@ -22,147 +25,194 @@ class RankingFragment :
     private var selectedReviewLevel:
             ReviewLevel? = null
 
-
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?
     ) {
-
 
         super.onViewCreated(
             view,
             savedInstanceState
         )
 
-        val movieNameInput =
-            view.findViewById<EditText>(
-                R.id.movieNameInput
+        val movie =
+            viewModel
+                .selectedMovie
+                .value
+                ?: run {
+
+                    findNavController()
+                        .popBackStack()
+
+                    return
+                }
+
+        val poster =
+            view.findViewById<
+                    ImageView
+                    >(
+                R.id.rankingMoviePoster
+            )
+
+        val movieTitle =
+            view.findViewById<
+                    TextView
+                    >(
+                R.id.rankingMovieTitle
+            )
+
+        val releaseDate =
+            view.findViewById<
+                    TextView
+                    >(
+                R.id.rankingReleaseDate
+            )
+
+        val genre =
+            view.findViewById<
+                    TextView
+                    >(
+                R.id.rankingGenre
             )
 
         val notesInput =
-            view.findViewById<EditText>(
+            view.findViewById<
+                    EditText
+                    >(
                 R.id.notesInput
             )
 
-        val genreSpinner =
-            view.findViewById<Spinner>(
-                R.id.genreSpinner
-            )
-
         val greatButton =
-            view.findViewById<com.google.android.material.button.MaterialButton>(
+            view.findViewById<
+                    MaterialButton
+                    >(
                 R.id.greatButton
             )
 
         val okButton =
-            view.findViewById<com.google.android.material.button.MaterialButton>(
+            view.findViewById<
+                    MaterialButton
+                    >(
                 R.id.okButton
             )
 
         val badButton =
-            view.findViewById<com.google.android.material.button.MaterialButton>(
+            view.findViewById<
+                    MaterialButton
+                    >(
                 R.id.badButton
             )
-        addClickAnimation(greatButton)
-        addClickAnimation(okButton)
-        addClickAnimation(badButton)
-        addClickAnimation(movieNameInput)
-        addClickAnimation(genreSpinner)
-        addClickAnimation(notesInput)
 
         val submitButton =
-            view.findViewById<Button>(
+            view.findViewById<
+                    MaterialButton
+                    >(
                 R.id.submitRankingButton
             )
-        addClickAnimation(submitButton)
 
-        val backToProfile =
-            view.findViewById<ImageButton>(
+        val backButton =
+            view.findViewById<
+                    ImageButton
+                    >(
                 R.id.backToProfile
             )
 
-        backToProfile.setOnClickListener {
-            findNavController().popBackStack()
-        }
+        movieTitle.text =
+            movie.title
 
-        greatButton.setOnClickListener {
-            selectedReviewLevel = ReviewLevel.GREAT
+        releaseDate.text =
+            movie.releaseDate
+                ?.take(4)
+                ?: ""
 
-            updateSelectedButton(
-                greatButton,
-                greatButton,
-                okButton,
-                badButton
+        genre.text =
+            GenreMapper.fromIds(
+                movie.genreIds
             )
-        }
 
-        okButton.setOnClickListener {
-            selectedReviewLevel = ReviewLevel.OK
+        movie.posterPath
+            ?.let {
 
-            updateSelectedButton(
-                okButton,
-                greatButton,
-                okButton,
-                badButton
-            )
-        }
+                Glide.with(this)
+                    .load(
+                        "https://image.tmdb.org/t/p/w500$it"
+                    )
+                    .into(poster)
+            }
 
-        badButton.setOnClickListener {
-            selectedReviewLevel = ReviewLevel.BAD
+        addClickAnimation(
+            greatButton
+        )
 
-            updateSelectedButton(
-                badButton,
-                greatButton,
-                okButton,
-                badButton
-            )
-        }
+        addClickAnimation(
+            okButton
+        )
 
-        submitButton.setOnClickListener {
-            val movieName =
-                movieNameInput.text
-                    .toString()
-                    .trim()
+        addClickAnimation(
+            badButton
+        )
 
-            val notes =
-                notesInput.text
-                    .toString()
-                    .trim()
+        greatButton
+            .setOnClickListener {
 
-            val genre =
-                genreSpinner
-                    .selectedItem
-                    .toString()
+                selectedReviewLevel =
+                    ReviewLevel.GREAT
 
-
-            val reviewLevel =
-                selectedReviewLevel
-
-
-            if (
-                movieName.isNotBlank() &&
-                genre != "Genre" &&
-                reviewLevel != null
-            ) {
-
-                viewModel.addRanking(
-                    username = "Taylin",
-                    movieName = movieName,
-                    genre = genre,
-                    reviewLevel = reviewLevel,
-                    notes = notes
+                updateSelectedButton(
+                    greatButton,
+                    greatButton,
+                    okButton,
+                    badButton
                 )
+            }
 
+        okButton
+            .setOnClickListener {
 
-                /*
-                 * If there is another movie
-                 * available for comparison,
-                 * go to ComparisonFragment.
-                 */
+                selectedReviewLevel =
+                    ReviewLevel.OK
+
+                updateSelectedButton(
+                    okButton,
+                    greatButton,
+                    okButton,
+                    badButton
+                )
+            }
+
+        badButton
+            .setOnClickListener {
+
+                selectedReviewLevel =
+                    ReviewLevel.BAD
+
+                updateSelectedButton(
+                    badButton,
+                    greatButton,
+                    okButton,
+                    badButton
+                )
+            }
+
+        submitButton
+            .setOnClickListener {
+
+                val level =
+                    selectedReviewLevel
+                        ?: return@setOnClickListener
+
+                viewModel
+                    .addSelectedMovie(
+                        level,
+                        notesInput
+                            .text
+                            .toString()
+                    )
 
                 if (
-                    viewModel.comparisonMovie.value
-                    != null
+                    viewModel
+                        .comparisonMovie
+                        .value != null
                 ) {
 
                     findNavController()
@@ -172,28 +222,41 @@ class RankingFragment :
 
                 } else {
 
-                    /*
-                     * First movie ever ranked.
-                     * Nothing to compare against.
-                     */
-
-                    viewModel.finishComparisons()
+                    viewModel
+                        .finishComparisons()
 
                     findNavController()
-                        .popBackStack()
+                        .navigate(
+                            R.id.action_rankingFragment_to_profileFragment
+                        )
                 }
             }
 
-        }
+        backButton
+            .setOnClickListener {
 
+                findNavController()
+                    .popBackStack()
+            }
     }
-    @SuppressLint("ClickableViewAccessibility")
-    private fun addClickAnimation(button: View) {
-        button.setOnTouchListener { view, event ->
 
-            when (event.action) {
+    @SuppressLint(
+        "ClickableViewAccessibility"
+    )
+    private fun addClickAnimation(
+        button: View
+    ) {
 
-                android.view.MotionEvent.ACTION_DOWN -> {
+        button.setOnTouchListener {
+                view,
+                event ->
+
+            when (
+                event.action
+            ) {
+
+                MotionEvent.ACTION_DOWN -> {
+
                     view.animate()
                         .scaleX(0.92f)
                         .scaleY(0.92f)
@@ -201,8 +264,9 @@ class RankingFragment :
                         .start()
                 }
 
-                android.view.MotionEvent.ACTION_UP,
-                android.view.MotionEvent.ACTION_CANCEL -> {
+                MotionEvent.ACTION_UP,
+                MotionEvent.ACTION_CANCEL -> {
+
                     view.animate()
                         .scaleX(1f)
                         .scaleY(1f)
@@ -214,34 +278,19 @@ class RankingFragment :
             false
         }
     }
+
     private fun updateSelectedButton(
-        selectedButton: com.google.android.material.button.MaterialButton,
-        greatButton: com.google.android.material.button.MaterialButton,
-        okButton: com.google.android.material.button.MaterialButton,
-        badButton: com.google.android.material.button.MaterialButton
+        selected: MaterialButton,
+        great: MaterialButton,
+        ok: MaterialButton,
+        bad: MaterialButton
     ) {
-        // Reset colors
-        greatButton.backgroundTintList =
-            android.content.res.ColorStateList.valueOf(
-                android.graphics.Color.parseColor("#CC72D58A")
-            )
 
-        okButton.backgroundTintList =
-            android.content.res.ColorStateList.valueOf(
-                android.graphics.Color.parseColor("#CCD9CF65")
-            )
+        great.alpha = 1f
+        ok.alpha = 1f
+        bad.alpha = 1f
 
-        badButton.backgroundTintList =
-            android.content.res.ColorStateList.valueOf(
-                android.graphics.Color.parseColor("#CCC36D6D")
-            )
-
-        // Reset opacity
-        greatButton.alpha = 1f
-        okButton.alpha = 1f
-        badButton.alpha = 1f
-
-        // Grey/mute only the selected one
-        selectedButton.alpha = 0.7f
+        selected.alpha =
+            0.7f
     }
 }

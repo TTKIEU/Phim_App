@@ -13,11 +13,12 @@ import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
 
 class ComparisonFragment :
-    Fragment(R.layout.fragment_comparison) {
+    Fragment(
+        R.layout.fragment_comparison
+    ) {
 
     private val viewModel:
             MovieViewModel by activityViewModels()
-
 
     override fun onViewCreated(
         view: View,
@@ -29,145 +30,167 @@ class ComparisonFragment :
             savedInstanceState
         )
 
-
-        val movieAName =
-            view.findViewById<TextView>(
-                R.id.movieAName
-            )
-
-        val movieBName =
-            view.findViewById<TextView>(
-                R.id.movieBName
-            )
-
         val movieAButton =
-            view.findViewById<Button>(
+            view.findViewById<
+                    Button
+                    >(
                 R.id.movieAButton
             )
 
         val movieBButton =
-            view.findViewById<Button>(
+            view.findViewById<
+                    Button
+                    >(
                 R.id.movieBButton
             )
 
+        val statusText =
+            view.findViewById<
+                    TextView
+                    >(
+                R.id.comparisonStatus
+            )
+
         val finishButton =
-            view.findViewById<Button>(
+            view.findViewById<
+                    Button
+                    >(
                 R.id.finishComparisonButton
             )
 
+        movieAButton
+            .setOnClickListener {
 
-        viewLifecycleOwner.lifecycleScope.launch {
+                val current =
+                    viewModel
+                        .currentMovie
+                        .value
 
-            viewLifecycleOwner.repeatOnLifecycle(
-                Lifecycle.State.STARTED
-            ) {
+                val comparison =
+                    viewModel
+                        .comparisonMovie
+                        .value
 
-                viewModel.currentMovie.collect {
-                        current ->
+                if (
+                    current != null &&
+                    comparison != null
+                ) {
 
-                    current ?: return@collect
-
-                    movieAName.text =
-                        current.movieName
-
-                    movieAButton.text =
-                        current.movieName
+                    viewModel
+                        .chooseWinner(
+                            current,
+                            comparison
+                        )
                 }
             }
-        }
 
+        movieBButton
+            .setOnClickListener {
 
-        viewLifecycleOwner.lifecycleScope.launch {
+                val current =
+                    viewModel
+                        .currentMovie
+                        .value
 
-            viewLifecycleOwner.repeatOnLifecycle(
-                Lifecycle.State.STARTED
-            ) {
+                val comparison =
+                    viewModel
+                        .comparisonMovie
+                        .value
 
-                viewModel.comparisonMovie.collect {
-                        comparison ->
+                if (
+                    current != null &&
+                    comparison != null
+                ) {
 
-                    if (comparison == null) {
+                    viewModel
+                        .chooseWinner(
+                            comparison,
+                            current
+                        )
+                }
+            }
 
-                        finishButton.visibility =
-                            View.VISIBLE
+        finishButton
+            .setOnClickListener {
 
-                        movieBButton.isEnabled =
-                            false
+                viewModel
+                    .finishComparisons()
 
-                        movieBName.text =
-                            "Finished!"
+                findNavController()
+                    .navigate(
+                        R.id.action_comparisonFragment_to_profileFragment
+                    )
+            }
 
-                    } else {
+        viewLifecycleOwner
+            .lifecycleScope
+            .launch {
 
-                        finishButton.visibility =
-                            View.GONE
+                viewLifecycleOwner
+                    .repeatOnLifecycle(
+                        Lifecycle.State.STARTED
+                    ) {
 
-                        movieBButton.isEnabled =
-                            true
+                        launch {
 
-                        movieBName.text =
-                            comparison.movieName
+                            viewModel
+                                .currentMovie
+                                .collect {
 
-                        movieBButton.text =
-                            comparison.movieName
+                                    movieAButton.text =
+                                        it?.movieName
+                                            ?: ""
+                                }
+                        }
+
+                        launch {
+
+                            viewModel
+                                .comparisonMovie
+                                .collect {
+
+                                    if (
+                                        it == null
+                                    ) {
+
+                                        movieAButton
+                                            .isEnabled =
+                                            false
+
+                                        movieBButton
+                                            .isEnabled =
+                                            false
+
+                                        finishButton
+                                            .visibility =
+                                            View.VISIBLE
+
+                                        statusText.text =
+                                            "Ranking complete"
+
+                                    } else {
+
+                                        movieAButton
+                                            .isEnabled =
+                                            true
+
+                                        movieBButton
+                                            .isEnabled =
+                                            true
+
+                                        finishButton
+                                            .visibility =
+                                            View.GONE
+
+                                        statusText.text =
+                                            "Which movie do you prefer?"
+
+                                        movieBButton.text =
+                                            it.movieName
+                                    }
+                                }
+                        }
                     }
-                }
             }
-        }
-
-
-        movieAButton.setOnClickListener {
-
-            val current =
-                viewModel.currentMovie.value
-
-            val comparison =
-                viewModel.comparisonMovie.value
-
-
-            if (
-                current != null &&
-                comparison != null
-            ) {
-
-                viewModel.chooseWinner(
-                    winner = current,
-                    loser = comparison
-                )
-            }
-        }
-
-
-        movieBButton.setOnClickListener {
-
-            val current =
-                viewModel.currentMovie.value
-
-            val comparison =
-                viewModel.comparisonMovie.value
-
-
-            if (
-                current != null &&
-                comparison != null
-            ) {
-
-                viewModel.chooseWinner(
-                    winner = comparison,
-                    loser = current
-                )
-            }
-        }
-
-
-        finishButton.setOnClickListener {
-
-            viewModel.finishComparisons()
-
-            findNavController()
-                .navigate(
-                    R.id.action_comparisonFragment_to_profileFragment
-                )
-        }
     }
 }
