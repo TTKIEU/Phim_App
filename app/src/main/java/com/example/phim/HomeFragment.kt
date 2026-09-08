@@ -4,105 +4,109 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.launch
 
-class HomeFragment : Fragment(R.layout.fragment_home) {
+class HomeFragment :
+    Fragment(
+        R.layout.fragment_home
+    ) {
+
+    private val viewModel:
+            FeedViewModel by viewModels()
+
+    private lateinit var adapter:
+            FeedAdapter
 
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?
     ) {
-        super.onViewCreated(view, savedInstanceState)
+
+        super.onViewCreated(
+            view,
+            savedInstanceState
+        )
 
         val recyclerView =
-            view.findViewById<RecyclerView>(
+            view.findViewById<
+                    RecyclerView
+                    >(
                 R.id.movieRecyclerView
             )
 
         val profileButton =
-            view.findViewById<ImageButton>(
+            view.findViewById<
+                    ImageButton
+                    >(
                 R.id.navProfileButton
             )
 
-        val posts = listOf(
-
-            MoviePost(
-                username = "Taylin",
-                movieName = "Interstellar",
-                genre = "Sci-Fi",
-                reviewLevel = ReviewLevel.GREAT,
-                notes = "Amazing visuals and story.",
-                rating = 8.0
-            ),
-
-            MoviePost(
-                username = "Alex",
-                movieName = "The Batman",
-                genre = "Action",
-                reviewLevel = ReviewLevel.GREAT,
-                notes = "Loved the atmosphere and cinematography.",
-                rating = 8.0
-            ),
-
-            MoviePost(
-                username = "Sam",
-                movieName = "Dune: Part Two",
-                genre = "Sci-Fi",
-                reviewLevel = ReviewLevel.GREAT,
-                notes = "The cinematography was incredible.",
-                rating = 8.0
-            ),
-
-            MoviePost(
-                username = "Jordan",
-                movieName = "Everything Everywhere All at Once",
-                genre = "Comedy",
-                reviewLevel = ReviewLevel.GREAT,
-                notes = "Creative and surprisingly emotional.",
-                rating = 8.0
-            ),
-
-            MoviePost(
-                username = "Nicole",
-                movieName = "Umamusume: Pretty Derby",
-                genre = "Animation",
-                reviewLevel = ReviewLevel.GREAT,
-                notes = "Really fun and memorable.",
-                rating = 8.0
-            ),
-
-            MoviePost(
-                username = "Chris",
-                movieName = "Iron Man",
-                genre = "Action",
-                reviewLevel = ReviewLevel.OK,
-                notes = "Still fun, but not one of my favorites.",
-                rating = 8.0
-            ),
-
-            MoviePost(
-                username = "Jamie",
-                movieName = "Morbius",
-                genre = "Action",
-                reviewLevel = ReviewLevel.BAD,
-                notes = "Didn't really work for me.",
-                rating = 8.0
+        val friendsButton =
+            view.findViewById<
+                    ImageButton
+                    >(
+                R.id.navFriendsButton
             )
-        )
+
+        adapter =
+            FeedAdapter()
 
         recyclerView.layoutManager =
-            LinearLayoutManager(requireContext())
+            LinearLayoutManager(
+                requireContext()
+            )
 
         recyclerView.adapter =
-            MovieAdapter(posts)
+            adapter
 
-        profileButton.setOnClickListener {
+        profileButton
+            .setOnClickListener {
 
-            findNavController().navigate(
-                R.id.action_homeFragment_to_profileFragment
-            )
-        }
+                findNavController()
+                    .navigate(
+                        R.id.action_homeFragment_to_profileFragment
+                    )
+            }
+
+        friendsButton
+            .setOnClickListener {
+
+                findNavController()
+                    .navigate(
+                        R.id.action_homeFragment_to_friendsFragment
+                    )
+            }
+
+        viewLifecycleOwner
+            .lifecycleScope
+            .launch {
+
+                viewLifecycleOwner
+                    .repeatOnLifecycle(
+                        Lifecycle.State.STARTED
+                    ) {
+
+                        viewModel.feed
+                            .collect {
+
+                                adapter.submitList(
+                                    it
+                                )
+                            }
+                    }
+            }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        viewModel.refresh()
     }
 }

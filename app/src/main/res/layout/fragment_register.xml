@@ -17,19 +17,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:text="Phim"
+        android:text="Create Account"
 
         android:textColor="#FFFFFF"
-        android:textSize="42sp"
+        android:textSize="28sp"
         android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/emailInput"
+        android:id="@+id/usernameInput"
 
         android:layout_width="match_parent"
         android:layout_height="56dp"
 
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="30dp"
+
+        android:hint="Username"
+
+        android:textColor="#FFFFFF"
+        android:textColorHint="#AAAAAA" />
+
+    <EditText
+        android:id="@+id/registerEmailInput"
+
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
 
         android:hint="Email"
 
@@ -39,12 +50,10 @@
         android:textColorHint="#AAAAAA" />
 
     <EditText
-        android:id="@+id/passwordInput"
+        android:id="@+id/registerPasswordInput"
 
         android:layout_width="match_parent"
         android:layout_height="56dp"
-
-        android:layout_marginTop="12dp"
 
         android:hint="Password"
 
@@ -54,33 +63,31 @@
         android:textColorHint="#AAAAAA" />
 
     <TextView
-        android:id="@+id/loginErrorText"
+        android:id="@+id/registerErrorText"
 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
-        android:layout_marginTop="8dp"
-
         android:textColor="#FF8888" />
 
     <Button
-        android:id="@+id/loginButton"
+        android:id="@+id/createAccountButton"
 
         android:layout_width="match_parent"
         android:layout_height="56dp"
 
         android:layout_marginTop="20dp"
 
-        android:text="Login" />
+        android:text="Create Account" />
 
     <Button
-        android:id="@+id/registerButton"
+        android:id="@+id/backToLoginButton"
 
         android:layout_width="match_parent"
         android:layout_height="56dp"
 
         android:layout_marginTop="10dp"
 
-        android:text="Create Account" />
+        android:text="Back" />
 
 </LinearLayout>

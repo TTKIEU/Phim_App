@@ -9,12 +9,12 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.phim.repository.AuthRepository
 
-class LoginFragment :
+class RegisterFragment :
     Fragment(
-        R.layout.fragment_login
+        R.layout.fragment_register
     ) {
 
-    private val authRepository =
+    private val repository =
         AuthRepository()
 
     override fun onViewCreated(
@@ -27,56 +27,56 @@ class LoginFragment :
             savedInstanceState
         )
 
-        if (
-            authRepository
-                .currentUser() != null
-        ) {
-
-            findNavController()
-                .navigate(
-                    R.id.action_loginFragment_to_homeFragment
-                )
-
-            return
-        }
+        val usernameInput =
+            view.findViewById<
+                    EditText
+                    >(
+                R.id.usernameInput
+            )
 
         val emailInput =
             view.findViewById<
                     EditText
                     >(
-                R.id.emailInput
+                R.id.registerEmailInput
             )
 
         val passwordInput =
             view.findViewById<
                     EditText
                     >(
-                R.id.passwordInput
+                R.id.registerPasswordInput
             )
 
-        val loginButton =
+        val createButton =
             view.findViewById<
                     Button
                     >(
-                R.id.loginButton
+                R.id.createAccountButton
             )
 
-        val registerButton =
+        val backButton =
             view.findViewById<
                     Button
                     >(
-                R.id.registerButton
+                R.id.backToLoginButton
             )
 
         val errorText =
             view.findViewById<
                     TextView
                     >(
-                R.id.loginErrorText
+                R.id.registerErrorText
             )
 
-        loginButton
+        createButton
             .setOnClickListener {
+
+                val username =
+                    usernameInput
+                        .text
+                        .toString()
+                        .trim()
 
                 val email =
                     emailInput
@@ -90,17 +90,19 @@ class LoginFragment :
                         .toString()
 
                 if (
+                    username.isBlank() ||
                     email.isBlank() ||
-                    password.isBlank()
+                    password.length < 6
                 ) {
 
                     errorText.text =
-                        "Enter your email and password."
+                        "Enter a username, email, and password of at least 6 characters."
 
                     return@setOnClickListener
                 }
 
-                authRepository.login(
+                repository.register(
+                    username,
                     email,
                     password
                 ) {
@@ -113,25 +115,23 @@ class LoginFragment :
 
                         findNavController()
                             .navigate(
-                                R.id.action_loginFragment_to_homeFragment
+                                R.id.action_registerFragment_to_homeFragment
                             )
 
                     } else {
 
                         errorText.text =
                             message
-                                ?: "Login failed."
+                                ?: "Unable to create account."
                     }
                 }
             }
 
-        registerButton
+        backButton
             .setOnClickListener {
 
                 findNavController()
-                    .navigate(
-                        R.id.action_loginFragment_to_registerFragment
-                    )
+                    .popBackStack()
             }
     }
 }
