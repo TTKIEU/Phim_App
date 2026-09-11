@@ -73,26 +73,22 @@ class MovieViewModel :
 
 
     fun loadRankings() {
-
-        ratingListener
-            ?.remove()
-
+        if (ratingListener != null) {
+            return
+        }
         ratingListener =
             repository
-                .listenToCurrentUserRatings {
-                        ratings ->
-
+                .listenToCurrentUserRatings { ratings ->
                     /*
-                     * Avoid overwriting an
-                     * active comparison sequence.
+                     * Don't replace the local list
+                     * while a movie is actively
+                     * being ranked.
                      */
-                    if (
-                        _currentMovie.value ==
-                        null
-                    ) {
-
+                    if (_currentMovie.value == null) {
                         _rankings.value =
-                            ratings
+                            ratings.sortedByDescending {
+                                it.rating
+                            }
                     }
                 }
     }
@@ -111,7 +107,6 @@ class MovieViewModel :
         reviewLevel: ReviewLevel,
         notes: String
     ) {
-
         val selected =
             _selectedMovie.value
                 ?: return
@@ -144,71 +139,40 @@ class MovieViewModel :
                 ReviewLevel.BAD ->
                     3.5
             }
-
         val now =
             System.currentTimeMillis()
-
         val movie =
             MoviePost(
-
-                userId =
-                    firebaseUser.uid,
-
-                username =
-                    username,
-
-                tmdbId =
-                    selected.id,
-
-                movieName =
-                    selected.title,
-
-                posterPath =
-                    selected.posterPath,
-
-                releaseDate =
-                    selected.releaseDate
-                        ?: "",
-
-                genre =
-                    GenreMapper.fromIds(
-                        selected.genreIds
-                    ),
-
-                reviewLevel =
-                    reviewLevel.name,
-
-                notes =
-                    notes.trim(),
-
-                rating =
-                    startingRating,
-
-                createdAt =
-                    now,
-
-                updatedAt =
-                    now
+                userId = firebaseUser.uid,
+                username = username,
+                tmdbId = selected.id,
+                movieName = selected.title,
+                posterPath = selected.posterPath,
+                releaseDate = selected.releaseDate ?: "",
+                genre = GenreMapper.fromIds(
+                    selected.genreIds
+                ),
+                reviewLevel = reviewLevel.name,
+                notes = notes.trim(),
+                rating = startingRating,
+                createdAt = now,
+                updatedAt = now
             )
 
         _rankings.value =
-            (
-                    _rankings.value +
-                            movie
-                    )
+            (_rankings.value + movie)
+                .distinctBy {
+                    it.id
+                }
                 .sortedByDescending {
                     it.rating
                 }
 
-        _currentMovie.value =
-            movie
+        _currentMovie.value = movie
 
-        alreadyComparedIds
-            .clear()
+        alreadyComparedIds.clear()
 
-        repository.saveRating(
-            movie
-        )
+        repository.saveRating(movie)
 
         findNextComparison()
     }
@@ -220,36 +184,22 @@ class MovieViewModel :
             _currentMovie.value
                 ?: return
 
-        /*
-         * Preserve your existing behavior:
-         * Great initially compares against
-         * Great, OK against OK, etc.
-         */
         val candidates =
             _rankings.value
                 .filter {
-
-                    it.id !=
-                            current.id
+                    it.id != current.id
                 }
                 .filter {
-
-                    it.id !in
-                            alreadyComparedIds
+                    it.id !in alreadyComparedIds
                 }
                 .filter {
-
-                    it.reviewLevel ==
-                            current.reviewLevel
+                    it.reviewLevel == current.reviewLevel
                 }
                 .sortedBy {
-
                     kotlin.math.abs(
-                        it.rating -
-                                current.rating
+                        it.rating - current.rating
                     )
                 }
-
         _comparisonMovie.value =
             candidates.firstOrNull()
     }
@@ -305,12 +255,7 @@ class MovieViewModel :
         loser: MoviePost
     ) {
 
-        /*
-         * Same basic 0–10 algorithm
-         * you're currently using.
-         */
-        val kFactor =
-            0.5
+        val kFactor = 0.5
 
         val expectedWinner =
             expectedScore(
@@ -324,85 +269,93 @@ class MovieViewModel :
                 winner.rating
             )
 
-        val newWinnerRating =
-            roundRating(
+        var newWinnerRating =
+            winner.rating +
+                    kFactor * (1.0 - expectedWinner)
 
-                winner.rating +
-                        kFactor *
-                        (
-                                1.0 -
-                                        expectedWinner
-                                )
+        var newLoserRating =
+            loser.rating +
+                    kFactor * (0.0 - expectedLoser)
+
+
+        /*
+         * IMPORTANT:
+         *
+         * A direct comparison is stronger evidence
+         * than the initial Great / OK / Bad category.
+         *
+         * If the winner still ends up below the loser,
+         * force their ratings to reflect the user's
+         * actual preference.
+         */
+        if (newWinnerRating <= newLoserRating) {
+
+            val midpoint =
+                (newWinnerRating + newLoserRating) / 2.0
+
+            newWinnerRating =
+                midpoint + 0.1
+
+            newLoserRating =
+                midpoint - 0.1
+        }
+
+
+        newWinnerRating =
+            roundRating(
+                newWinnerRating
+                    .coerceIn(0.0, 10.0)
             )
 
-        val newLoserRating =
+        newLoserRating =
             roundRating(
-
-                loser.rating +
-                        kFactor *
-                        (
-                                0.0 -
-                                        expectedLoser
-                                )
+                newLoserRating
+                    .coerceIn(0.0, 10.0)
             )
 
-        var updatedWinner:
-                MoviePost? = null
-
-        var updatedLoser:
-                MoviePost? = null
 
         val now =
             System.currentTimeMillis()
 
+        var updatedWinner: MoviePost? = null
+        var updatedLoser: MoviePost? = null
+
+
         _rankings.value =
             _rankings.value
-                .map {
-                        movie ->
+                .map { movie ->
 
-                    when (
-                        movie.id
-                    ) {
+                    when (movie.id) {
 
                         winner.id -> {
 
                             movie.copy(
-                                rating =
-                                    newWinnerRating,
+                                rating = newWinnerRating,
+                                updatedAt = now
+                            ).also {
 
-                                updatedAt =
-                                    now
-                            )
-                                .also {
-
-                                    updatedWinner =
-                                        it
-                                }
+                                updatedWinner = it
+                            }
                         }
 
                         loser.id -> {
 
                             movie.copy(
-                                rating =
-                                    newLoserRating,
+                                rating = newLoserRating,
+                                updatedAt = now
+                            ).also {
 
-                                updatedAt =
-                                    now
-                            )
-                                .also {
-
-                                    updatedLoser =
-                                        it
-                                }
+                                updatedLoser = it
+                            }
                         }
 
-                        else ->
-                            movie
+                        else -> movie
                     }
                 }
                 .sortedByDescending {
                     it.rating
                 }
+
 
         updatedWinner?.let {
             repository.saveRating(it)
@@ -418,25 +371,13 @@ class MovieViewModel :
         ratingA: Double,
         ratingB: Double
     ): Double {
-
-        return 1.0 /
-                (
-                        1.0 +
-                                10.0.pow(
-                                    (
-                                            ratingB -
-                                                    ratingA
-                                            ) /
-                                            2.0
-                                )
-                        )
+        return 1.0 / (1.0 + 10.0.pow((ratingB - ratingA) / 2.0))
     }
 
 
     private fun roundRating(
         rating: Double
     ): Double {
-
         return round(
             rating
                 .coerceIn(
@@ -450,27 +391,17 @@ class MovieViewModel :
 
     fun finishComparisons() {
 
-        _currentMovie.value =
-            null
+        _currentMovie.value = null
+        _comparisonMovie.value = null
+        _selectedMovie.value = null
 
-        _comparisonMovie.value =
-            null
-
-        _selectedMovie.value =
-            null
-
-        alreadyComparedIds
-            .clear()
-
-        loadRankings()
+        alreadyComparedIds.clear()
     }
 
 
     override fun onCleared() {
-
         ratingListener
             ?.remove()
-
         super.onCleared()
     }
 }

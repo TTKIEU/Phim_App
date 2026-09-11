@@ -14,26 +14,15 @@ class RankingAdapter :
             >() {
 
     private var items:
-            List<MoviePost> =
-        emptyList()
+            List<MoviePost> = emptyList()
 
-    fun submitList(
-        movies: List<MoviePost>
-    ) {
-
-        items =
-            movies
-
+    fun submitList(movies: List<MoviePost>) {
+        items = movies
         notifyDataSetChanged()
     }
 
-    class RankingViewHolder(
-        view: View
-    ) :
-        RecyclerView.ViewHolder(
-            view
-        ) {
-
+    class RankingViewHolder(view: View):
+        RecyclerView.ViewHolder(view) {
         val rank:
                 TextView =
             view.findViewById(
