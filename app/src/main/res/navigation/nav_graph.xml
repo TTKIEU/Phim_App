@@ -8,44 +8,38 @@
 
     app:startDestination="@id/loginFragment">
 
+<!--    login-->
+
     <fragment
         android:id="@+id/loginFragment"
-
         android:name="com.example.phim.LoginFragment"
-
         android:label="Login">
 
         <action
             android:id="@+id/action_loginFragment_to_homeFragment"
-
             app:destination="@id/homeFragment"
 
             app:popUpTo="@id/loginFragment"
-
             app:popUpToInclusive="true" />
 
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
-
             app:destination="@id/registerFragment" />
 
     </fragment>
 
 
+
     <fragment
         android:id="@+id/registerFragment"
-
         android:name="com.example.phim.RegisterFragment"
-
         android:label="Register">
 
         <action
             android:id="@+id/action_registerFragment_to_homeFragment"
-
             app:destination="@id/homeFragment"
 
             app:popUpTo="@id/loginFragment"
-
             app:popUpToInclusive="true" />
 
     </fragment>
@@ -53,19 +47,15 @@
 
     <fragment
         android:id="@+id/homeFragment"
-
         android:name="com.example.phim.HomeFragment"
-
         android:label="Home">
 
         <action
             android:id="@+id/action_homeFragment_to_profileFragment"
-
             app:destination="@id/profileFragment" />
 
         <action
             android:id="@+id/action_homeFragment_to_friendsFragment"
-
             app:destination="@id/friendsFragment" />
 
     </fragment>
@@ -82,6 +72,12 @@
             android:id="@+id/action_profileFragment_to_movieSearchFragment"
 
             app:destination="@id/movieSearchFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false"
+            app:launchSingleTop="true" />
 
         <action
             android:id="@+id/action_profileFragment_to_loginFragment"
@@ -124,8 +120,10 @@
 
         <action
             android:id="@+id/action_rankingFragment_to_profileFragment"
-
-            app:destination="@id/profileFragment" />
+            app:destination="@id/profileFragment"
+            app:popUpTo="@id/profileFragment"
+            app:popUpToInclusive="false"
+            app:launchSingleTop="true" />
 
     </fragment>
 
@@ -139,8 +137,10 @@
 
         <action
             android:id="@+id/action_comparisonFragment_to_profileFragment"
-
-            app:destination="@id/profileFragment" />
+            app:destination="@id/profileFragment"
+            app:popUpTo="@id/profileFragment"
+            app:popUpToInclusive="false"
+            app:launchSingleTop="true" />
 
     </fragment>
 
