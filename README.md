@@ -1,1 +1,1 @@
-Movie Ranking Android App that lets users log movies and rank them against previously watched.
+A film taste-based ranking app! Kotlin/FireBase
