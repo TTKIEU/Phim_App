@@ -77,7 +77,6 @@ class ProfileFragment :
 
         addButton
             .setOnClickListener {
-
                 findNavController()
                     .navigate(
                         R.id.action_profileFragment_to_movieSearchFragment
@@ -86,7 +85,6 @@ class ProfileFragment :
 
         backButton
             .setOnClickListener {
-
                 findNavController()
                     .popBackStack()
             }
@@ -94,13 +92,12 @@ class ProfileFragment :
         logoutButton
             .setOnClickListener {
 
-                AuthRepository()
-                    .logout()
+                AuthRepository().logout()
+                viewModel.clearUserData()
 
-                findNavController()
-                    .navigate(
-                        R.id.action_profileFragment_to_loginFragment
-                    )
+                findNavController().navigate(
+                    R.id.action_profileFragment_to_loginFragment
+                )
             }
 
         viewLifecycleOwner

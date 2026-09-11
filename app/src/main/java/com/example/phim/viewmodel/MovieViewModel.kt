@@ -73,17 +73,16 @@ class MovieViewModel :
 
 
     fun loadRankings() {
-        if (ratingListener != null) {
-            return
-        }
+
+        ratingListener?.remove()
+        ratingListener = null
+
+        _rankings.value = emptyList()
+
         ratingListener =
             repository
                 .listenToCurrentUserRatings { ratings ->
-                    /*
-                     * Don't replace the local list
-                     * while a movie is actively
-                     * being ranked.
-                     */
+
                     if (_currentMovie.value == null) {
                         _rankings.value =
                             ratings.sortedByDescending {
@@ -403,5 +402,18 @@ class MovieViewModel :
         ratingListener
             ?.remove()
         super.onCleared()
+    }
+    fun clearUserData() {
+
+        ratingListener?.remove()
+        ratingListener = null
+
+        _rankings.value = emptyList()
+
+        _selectedMovie.value = null
+        _currentMovie.value = null
+        _comparisonMovie.value = null
+
+        alreadyComparedIds.clear()
     }
 }

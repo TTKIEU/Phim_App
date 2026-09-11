@@ -53,23 +53,23 @@ class RatingRepository {
     }
 
     fun listenToCurrentUserRatings(
-        onRatingsChanged:
-            (List<MoviePost>) -> Unit
+        onRatingsChanged: (List<MoviePost>) -> Unit
     ): ListenerRegistration? {
 
         val uid =
-            currentUserId()
+            FirebaseAuth.getInstance()
+                .currentUser
+                ?.uid
                 ?: return null
 
-        return db
+        return FirebaseFirestore
+            .getInstance()
             .collection("ratings")
             .whereEqualTo(
                 "userId",
                 uid
             )
-            .addSnapshotListener {
-                    snapshot,
-                    error ->
+            .addSnapshotListener { snapshot, error ->
 
                 if (
                     error != null ||
@@ -81,19 +81,15 @@ class RatingRepository {
                 val ratings =
                     snapshot.documents
                         .mapNotNull {
-
                             it.toObject(
                                 MoviePost::class.java
                             )
                         }
                         .sortedByDescending {
-
                             it.rating
                         }
 
-                onRatingsChanged(
-                    ratings
-                )
+                onRatingsChanged(ratings)
             }
     }
 
