@@ -112,35 +112,25 @@ class ComparisonFragment :
 
         finishButton
             .setOnClickListener {
-
-                viewModel
-                    .finishComparisons()
-
+                viewModel.finishComparisons()
                 findNavController()
-                    .navigate(
-                        R.id.action_comparisonFragment_to_profileFragment
-                    )
+                    .navigate(R.id.action_comparisonFragment_to_profileFragment)
             }
 
         viewLifecycleOwner
             .lifecycleScope
             .launch {
-
                 viewLifecycleOwner
                     .repeatOnLifecycle(
                         Lifecycle.State.STARTED
                     ) {
-
                         launch {
-
                             viewModel
                                 .currentMovie
                                 .collect {
-
                                     movieAButton.text =
                                         it?.movieName
-                                            ?: ""
-                                }
+                                            ?: "" }
                         }
 
                         launch {
