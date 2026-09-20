@@ -2,6 +2,7 @@ package com.example.phim
 
 import androidx.lifecycle.ViewModel
 import com.example.phim.network.TmdbMovie
+import com.example.phim.repository.RatingDataSource
 import com.example.phim.repository.RatingRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ListenerRegistration
@@ -11,11 +12,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlin.math.pow
 import kotlin.math.round
 
-class MovieViewModel :
-    ViewModel() {
+class MovieViewModel(
+    private val repository: RatingDataSource = RatingRepository()
+    ) :ViewModel() {
 
-    private val repository =
-        RatingRepository()
 
     private var ratingListener:
             ListenerRegistration? = null

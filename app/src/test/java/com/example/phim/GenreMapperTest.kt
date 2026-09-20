@@ -1,3 +1,4 @@
+@file:Suppress("IllegalIdentifier")
 package com.example.phim
 
 import org.junit.Assert.assertEquals

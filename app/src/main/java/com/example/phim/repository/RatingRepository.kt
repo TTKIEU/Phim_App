@@ -5,7 +5,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 
-class RatingRepository {
+class RatingRepository : RatingDataSource {
 
     private val auth =
         FirebaseAuth.getInstance()
@@ -13,14 +13,12 @@ class RatingRepository {
     private val db =
         FirebaseFirestore.getInstance()
 
-    fun currentUserId(): String? =
+    override fun currentUserId(): String? =
         auth.currentUser?.uid
 
-    fun saveRating(
+    override fun saveRating(
         movie: MoviePost,
-        onComplete: (
-            Boolean
-        ) -> Unit = {}
+        onComplete: (Boolean) -> Unit
     ) {
 
         val uid =
@@ -52,18 +50,16 @@ class RatingRepository {
             }
     }
 
-    fun listenToCurrentUserRatings(
+    override fun listenToCurrentUserRatings(
         onRatingsChanged: (List<MoviePost>) -> Unit
     ): ListenerRegistration? {
 
         val uid =
-            FirebaseAuth.getInstance()
-                .currentUser
+            auth.currentUser
                 ?.uid
                 ?: return null
 
-        return FirebaseFirestore
-            .getInstance()
+        return db
             .collection("ratings")
             .whereEqualTo(
                 "userId",
@@ -93,10 +89,9 @@ class RatingRepository {
             }
     }
 
-    fun loadRecentRatingsForUsers(
+    override fun loadRecentRatingsForUsers(
         userIds: List<String>,
-        onResult:
-            (List<MoviePost>) -> Unit
+        onResult: (List<MoviePost>) -> Unit
     ) {
 
         if (userIds.isEmpty()) {
@@ -106,11 +101,6 @@ class RatingRepository {
             return
         }
 
-        /*
-         * Firestore limits whereIn values.
-         * Chunking also lets this continue
-         * working as the friend list grows.
-         */
         val chunks =
             userIds.chunked(30)
 
@@ -127,8 +117,7 @@ class RatingRepository {
                     chunk
                 )
                 .get()
-                .addOnCompleteListener {
-                        task ->
+                .addOnCompleteListener { task ->
 
                     if (task.isSuccessful) {
 
@@ -142,9 +131,7 @@ class RatingRepository {
                             }
                             ?.let {
 
-                                allRatings.addAll(
-                                    it
-                                )
+                                allRatings.addAll(it)
                             }
                     }
 

@@ -1,3 +1,4 @@
+@file:Suppress("IllegalIdentifier")
 package com.example.phim
 
 import com.example.phim.network.TmdbMovie
