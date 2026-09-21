@@ -5,16 +5,15 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 
+//handles authentication using fireBase API calls
 class AuthRepository {
 
-    private val auth =
-        FirebaseAuth.getInstance()
+    //get the instances of Fire base (authentication) and fire store (database)
+    private val auth = FirebaseAuth.getInstance()
+    private val db = FirebaseFirestore.getInstance()
 
-    private val db =
-        FirebaseFirestore.getInstance()
+    fun currentUser() = auth.currentUser
 
-    fun currentUser() =
-        auth.currentUser
 
     fun login(
         email: String,
@@ -25,6 +24,7 @@ class AuthRepository {
         ) -> Unit
     ) {
 
+        //basically just invoking firebase functions to login using the fire base auth object
         auth.signInWithEmailAndPassword(
             email,
             password
@@ -35,8 +35,8 @@ class AuthRepository {
                     null
                 )
             }
+            //logging for debugging
             .addOnFailureListener { exception ->
-
                 android.util.Log.e(
                     "FirebaseAuth",
                     "createUserWithEmailAndPassword failed",

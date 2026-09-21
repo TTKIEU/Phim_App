@@ -9,43 +9,23 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class FeedViewModel :
     ViewModel() {
+    //want to view your friend's recently ranked
+    private val friendsRepository = FriendsRepository()
+    private val ratingRepository = RatingRepository()
 
-    private val friendsRepository =
-        FriendsRepository()
+    //create another state flow feed
+    private val _feed = MutableStateFlow<List<MoviePost>>(emptyList())
+    val feed: StateFlow<List<MoviePost>> = _feed.asStateFlow()
 
-    private val ratingRepository =
-        RatingRepository()
 
-    private val _feed =
-        MutableStateFlow<
-                List<MoviePost>
-                >(
-            emptyList()
-        )
-
-    val feed:
-            StateFlow<List<MoviePost>> =
-        _feed.asStateFlow()
-
+    //refresh feed
     fun refresh() {
-
-        friendsRepository
-            .loadFriends {
-                    friends ->
-
-                val ids =
-                    friends.map {
-                        it.id
-                    }
-
-                ratingRepository
-                    .loadRecentRatingsForUsers(
-                        ids
-                    ) {
-                            ratings ->
-
-                        _feed.value =
-                            ratings
+        friendsRepository.loadFriends { friends ->
+            //get id of friends
+                val ids = friends.map { it.id }
+            //load their recent ratings using their ids as the key
+                ratingRepository.loadRecentRatingsForUsers(ids) { ratings ->
+                        _feed.value = ratings
                     }
             }
     }

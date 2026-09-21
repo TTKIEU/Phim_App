@@ -6,11 +6,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class FriendsRepository {
 
-    private val auth =
-        FirebaseAuth.getInstance()
+    private val auth = FirebaseAuth.getInstance()
 
-    private val db =
-        FirebaseFirestore.getInstance()
+    private val db = FirebaseFirestore.getInstance()
 
     fun searchUsers(
         query: String,
@@ -18,17 +16,17 @@ class FriendsRepository {
             (List<User>) -> Unit
     ) {
 
-        val normalized =
-            query.trim()
-                .lowercase()
+        //normalize query
+        val normalized = query.trim().lowercase()
 
         if (normalized.isBlank()) {
-
             onResult(emptyList())
-
             return
         }
 
+        //look in fire store's users collection where the
+        //name matches the normalized query name
+        //get 20 of the closest names to the query as well
         db.collection("users")
             .whereGreaterThanOrEqualTo(
                 "usernameLowercase",
@@ -42,28 +40,16 @@ class FriendsRepository {
             .get()
             .addOnSuccessListener {
                     snapshot ->
+                //get current user(logged in user) in the authentication database if friend found
+                val currentUserId = auth.currentUser?.uid
 
-                val currentUserId =
-                    auth.currentUser?.uid
-
-                val users =
-                    snapshot.documents
-                        .mapNotNull {
-
-                            it.toObject(
-                                User::class.java
-                            )
-                        }
-                        .filter {
-
-                            it.id !=
-                                    currentUserId
-                        }
+                //
+                val users = snapshot.documents.mapNotNull {
+                            it.toObject(User::class.java) }.filter { it.id != currentUserId }
 
                 onResult(users)
             }
             .addOnFailureListener {
-
                 onResult(
                     emptyList()
                 )
@@ -79,9 +65,7 @@ class FriendsRepository {
         val uid =
             auth.currentUser?.uid
                 ?: run {
-
                     onResult(false)
-
                     return
                 }
 
@@ -91,7 +75,6 @@ class FriendsRepository {
             .document(friend.id)
             .set(friend)
             .addOnSuccessListener {
-
                 onResult(true)
             }
             .addOnFailureListener {
@@ -138,9 +121,7 @@ class FriendsRepository {
         val uid =
             auth.currentUser?.uid
                 ?: run {
-
                     onResult(emptyList())
-
                     return
                 }
 
