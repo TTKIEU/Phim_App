@@ -8,6 +8,8 @@ data class TmdbMovie(
 
     val title: String,
 
+    //given poster_path, release_date, genre_ids from TMDB json
+    //translate them into these objects
     @SerializedName("poster_path")
     val posterPath: String?,
 

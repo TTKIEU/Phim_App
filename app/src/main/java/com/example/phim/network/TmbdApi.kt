@@ -3,6 +3,7 @@ package com.example.phim.network
 import retrofit2.http.GET
 import retrofit2.http.Query
 
+//REST API implementation
 interface TmdbApi {
 
     @GET("search/movie")
